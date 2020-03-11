@@ -5,12 +5,13 @@ import Modal from "react-modal";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment";
+import { customStyles } from "./customStyles";
 
 class Slots extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      slots: null,
+      slots: [],
       isModalOpen: false,
       startDate: new Date()
     };
@@ -27,7 +28,12 @@ class Slots extends React.Component {
     await axios
       .get(url)
       .then(res => {
-        this.setState({ slots: res.data.data });
+        this.setState({
+          slots: [
+            { email: "Email", slot_time: "Slot Time", status: "Status" },
+            ...res?.data?.data
+          ]
+        });
       })
       .catch(err => {
         console.log("err", err);
@@ -101,80 +107,141 @@ class Slots extends React.Component {
     const { slots, startDate, modalIsOpen } = this.state;
     return (
       <div>
+        <div style={customStyles.welcomeText}>
+          <div>Hello! {this.props.seller_name}</div>
+          <div>
+            <button
+              style={customStyles.logout_btn}
+              onClick={() => this.props.logout()}
+            >
+              Logout
+            </button>
+          </div>
+        </div>
         <div>
           <button
+            style={customStyles.addAva_btn}
             onClick={() => {
               this.openModal();
             }}
           >
             Add Available Time
           </button>
-          <Modal isOpen={modalIsOpen} contentLabel="Example Modal">
+          <Modal style={customStyles.modal} isOpen={modalIsOpen}>
             <h3 style={{ textAlign: "center" }}>Add Available Time</h3>
-            <div>
-              <DatePicker
-                selected={startDate}
-                onChange={date => this.setDate(date)}
-                showTimeSelect
-                timeFormat="HH:mm"
-                timeIntervals={15}
-                timeCaption="time"
-                dateFormat="MMMM d, yyyy h:mm aa"
-              />
-            </div>
-            <div>
-              <button
-                onClick={() => {
-                  this.addAvaTime();
-                }}
-              >
-                Add
-              </button>
-            </div>
+            <DatePicker
+              selected={startDate}
+              onChange={date => this.setDate(date)}
+              showTimeSelect
+              timeFormat="HH:mm"
+              timeIntervals={15}
+              timeCaption="time"
+              dateFormat="MMMM d, yyyy h:mm aa"
+              style={{
+                height: 30,
+                width: "80%"
+              }}
+            />
+            <button
+              onClick={() => {
+                this.addAvaTime();
+              }}
+              style={customStyles.add_btn}
+            >
+              Add
+            </button>
+            <button
+              onClick={() => {
+                this.closeModal();
+              }}
+              style={customStyles.close_btn}
+            >
+              Close
+            </button>
           </Modal>
         </div>
-        <div>
-          {slots && slots.length ? (
-            <div>
-              <table>
-                <tbody>
-                  <th>Buyer Email</th>
-                  <th>Slot Booked Time</th>
-                  <th>Status</th>
-                </tbody>
-                {slots.map((slot, index) => {
-                  return (
-                    <tbody key={index}>
-                      <td>{slot.email}</td>
-                      <td>{slot.slot_time}</td>
-                      <td>{slot.status}</td>
-                      {slot.status === "pending" ? (
-                        <>
-                          <td>
-                            <button
-                              onClick={() => {
-                                this.approve(slot);
-                              }}
-                            >
-                              Approve
-                            </button>
-                          </td>{" "}
-                          <td>
-                            <button
-                              onClick={() => {
-                                this.reject(slot);
-                              }}
-                            >
-                              Reject
-                            </button>
-                          </td>
-                        </>
-                      ) : null}
-                    </tbody>
-                  );
-                })}
-              </table>
-            </div>
+        <div style={{ width: "100vw" }}>
+          {slots.length > 0 ? (
+            slots.map((slot, index) => {
+              return (
+                <div
+                  key={index}
+                  style={{
+                    flexDirection: "row",
+                    display: "flex",
+                    justifyContent: "space-around",
+                    wordWrap: "break-word"
+                  }}
+                >
+                  <h6
+                    style={{
+                      alignSelf: "center",
+                      width: "26%",
+                      marginTop: 12.5,
+                      marginBottom: 12.5
+                    }}
+                  >
+                    {slot.email}
+                  </h6>
+                  <h6
+                    style={{
+                      alignSelf: "center",
+                      width: "26%",
+                      marginTop: 12.5,
+                      marginBottom: 12.5
+                    }}
+                  >
+                    {slot.slot_time}
+                  </h6>
+                  <h6
+                    style={{
+                      alignSelf: "center",
+                      width: "26%",
+                      marginTop: 12.5,
+                      marginBottom: 12.5
+                    }}
+                  >
+                    {slot.status}
+                  </h6>
+                  {slot.status === "pending" ? (
+                    <>
+                      {" "}
+                      <button
+                        style={customStyles.approve_btn}
+                        onClick={() => {
+                          if (slot.status === "pending") this.approve(slot);
+                        }}
+                      >
+                        Approve
+                      </button>
+                      <button
+                        style={customStyles.reject_btn}
+                        onClick={() => {
+                          if (slot.status === "pending") this.reject(slot);
+                        }}
+                      >
+                        Reject
+                      </button>{" "}
+                    </>
+                  ) : (
+                    <>
+                      <div
+                        style={{
+                          width: "10%",
+                          maxWidth: 100
+                        }}
+                      />
+                      <div
+                        style={{
+                          width: "10%",
+                          maxWidth: 100
+                        }}
+                      />
+                    </>
+                  )}
+                </div>
+              );
+            })
           ) : (
             <div>
               <p>No Pending Slots</p>

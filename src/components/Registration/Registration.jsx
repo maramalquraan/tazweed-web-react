@@ -2,34 +2,7 @@ import React from "react";
 import "./Registration.css";
 import Modal from "react-modal";
 import axios from "axios";
-
-const customStyles = {
-  modal: {
-    content: {
-      top: "50%",
-      left: "50%",
-      right: "auto",
-      bottom: "auto",
-      transform: "translate(-50%, -50%)",
-      width: "40%",
-      maxWidth: 250
-    }
-  },
-  input: {
-    marginBottom: 10,
-    borderWidth: 1,
-    alignSelf: "center",
-    width: "100%"
-  },
-  txt: {
-    textAlign: "center",
-    fontSize: 12.5
-  },
-  anchor: {
-    cursor: "pointer",
-    color: "blue"
-  }
-};
+import { customStyles } from "./customStyles";
 
 class Registration extends React.Component {
   constructor(props) {
@@ -93,25 +66,21 @@ class Registration extends React.Component {
     await axios
       .post(url, { name, email, password })
       .then(res => {
-        alert(res.data.message);
         this.closeModal();
-        this.props.setData(true, res.data.seller._id);
+        this.props.setData(true, res.data.seller._id, res.data.seller.name);
+        localStorage.setItem("token", res.data.token);
+        localStorage.setItem("sellerId", res.data.seller._id);
       })
       .catch(err => {
-        // alert(err.response.data.message);
         console.log("err", err);
-        this.props.setData(false, null);
+        this.props.setData(false, null, null);
       });
   }
 
   render() {
     return (
       <div>
-        <Modal
-          isOpen={this.state.modalIsOpen}
-          style={customStyles.modal}
-          contentLabel="Example Modal"
-        >
+        <Modal isOpen={this.state.modalIsOpen} style={customStyles.modal}>
           <h3 style={{ textAlign: "center" }}>{this.state.registration}</h3>
           <div className="container">
             {this.state.registration === "Signup" ? (
@@ -142,14 +111,16 @@ class Registration extends React.Component {
             />
           </div>
           <div style={{ textAlign: "center" }}>
-            <input
+            <button
               id="submit"
               type="submit"
               name="Submit"
               value="Submit"
-              className="btn btn-primary btn-lg"
+              style={customStyles.submit_btn}
               onClick={() => this.submit()}
-            />
+            >
+              {this.state.registration}
+            </button>
           </div>
           <p style={customStyles.txt}>
             {this.state.registration_option_txt}{" "}
