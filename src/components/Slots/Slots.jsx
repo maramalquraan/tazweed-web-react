@@ -30,7 +30,11 @@ class Slots extends React.Component {
       .then(res => {
         this.setState({
           slots: [
-            { email: "Email", slot_time: "Slot Time", status: "Status" },
+            {
+              email: "Email",
+              slot_time: "Requested Slot Time",
+              status: "Status"
+            },
             ...res?.data?.data
           ]
         });
@@ -150,6 +154,11 @@ class Slots extends React.Component {
             >
               Add
             </button>
+            <div>
+              <p style={customStyles.note_text}>
+                Please Note : The Added Slots Will Appear on Buyer App
+              </p>
+            </div>
             <button
               onClick={() => {
                 this.closeModal();

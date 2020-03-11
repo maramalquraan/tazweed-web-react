@@ -98,5 +98,10 @@ export const customStyles = {
     marginBottom: 50,
     paddingRight: 10,
     paddingLeft: 10
+  },
+  note_text: {
+    textAlign: "center",
+    fontSize: 13.5,
+    color: "red"
   }
 };
