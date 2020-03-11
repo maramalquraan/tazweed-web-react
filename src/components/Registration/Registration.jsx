@@ -73,6 +73,7 @@ class Registration extends React.Component {
       })
       .catch(err => {
         console.log("err", err);
+        alert(err.response.data.message);
         this.props.setData(false, null, null);
       });
   }
